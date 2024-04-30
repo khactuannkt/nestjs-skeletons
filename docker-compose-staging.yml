@@ -1,0 +1,43 @@
+version: '3'
+services:
+  app:
+    image: khactuan2001/api.khactuan.site:latest
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    ports:
+      - '3000:3000'
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      TZ: 'GMT'
+      PGTZ: 'GMT'
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db-data/postgresql:/var/lib/postgresql/data
+      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    env_file:
+      - .env
+
+  mailhog:
+    image: mailhog/mailhog
+    restart: always
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - ./db-data/redis:/data
